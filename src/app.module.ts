@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -19,7 +20,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UsersModule,
     ConfigModule.forRoot({
     isGlobal: true,
-  })],
+  }),
+    AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
