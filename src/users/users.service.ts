@@ -17,7 +17,7 @@ export class UsersService {
   }
   async create (createUserDto: CreateUserDto)  {
     const hashPassword = this.getHashPassword(createUserDto.password)
-    let user = await this.userModel.create({
+    const user = await this.userModel.create({
       email: createUserDto.email,
       password: hashPassword, 
       name: createUserDto.name
