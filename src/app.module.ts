@@ -25,11 +25,11 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
   ],
   controllers: [AppController],
   providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard
-    }
+    AppService
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard
+    // }
   ]
 })
 export class AppModule {}
