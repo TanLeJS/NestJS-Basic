@@ -27,11 +27,26 @@ export class CompaniesService {
     return `This action returns a #${id} company`;
   }
 
-  async update(id: string, updateCompanyDto: UpdateCompanyDto) {
-    return await this.companyModel.updateOne({_id : id}, {...updateCompanyDto})
+  async update(id: string, updateCompanyDto: UpdateCompanyDto, user) {
+    return await this.companyModel.updateOne(
+      {_id : id},
+       {...updateCompanyDto,
+      updatedBy : {
+        _id : user._id,
+        email: user.email
+      }
+      },
+       )
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
-  }
+  async remove(id: string, user) {
+    await this.companyModel.updateOne(
+      {_id : id},
+       {
+      deletedBy : {
+        _id : user._id,
+        email: user.email
+      }})
+    return await this.companyModel.softDelete({_id: id})
+}
 }
