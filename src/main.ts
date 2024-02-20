@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -25,6 +25,12 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false
+  });
+  app.setGlobalPrefix('api');
+  // config versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: ['1', '2']
   });
   await app.listen(configService.get('PORT'));
 }
