@@ -24,16 +24,15 @@ export class CompaniesService {
     const { filter,sort, projection, population } = aqp(qs);
     delete filter.page;
     delete filter.limit
-    let offset = (+currentPage - 1) * (+limit);
-    let defaultLimit = +limit ? +limit : 10;
+    const offset = (+currentPage - 1) * (+limit);
+    const defaultLimit = +limit ? +limit : 10;
     const totalItems = (await this.companyModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
 
     const result = await this.companyModel.find(filter)
     .skip(offset)
     .limit(defaultLimit)
-    // @ts-ignore: Unreachable code error
-    .sort(sort)
+    .sort(sort as any)
     .populate(population)
     .exec();
 
