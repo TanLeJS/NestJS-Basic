@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { currentUser } from 'src/decorator/customize';
+import { ResponseMessage, currentUser } from 'src/decorator/customize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from './users.interface';
@@ -29,8 +29,9 @@ export class UsersController {
   }
 
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  @ResponseMessage("Update a user")
+  update(@Body() updateUserDto: UpdateUserDto, @currentUser() user: IUser) {
+    return this.usersService.update(updateUserDto, user);
   }
 
   @Delete(':id')

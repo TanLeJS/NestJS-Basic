@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { compareSync, genSaltSync, hashSync } from "bcryptjs";
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
-import { currentUser } from 'src/decorator/customize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,10 +19,13 @@ export class UsersService {
     return hash
   }
 
-  async create (createUserDto: CreateUserDto, @currentUser() user: IUser)  {
+  async create (createUserDto: CreateUserDto, user: IUser)  {
     const {name, email ,password, age, gender, address, role, company} = createUserDto
     const hashPassword = this.getHashPassword(password)
-
+    const isExist = await this.userModel.findOne({email})
+    if (isExist){
+      throw new BadRequestException(`Email ${email} đã tồn tại trên hệ thống`)
+    }
     const newUser = await this.userModel.create({
       name, email,
       password: hashPassword,
@@ -31,8 +33,13 @@ export class UsersService {
       createdBy: {
       _id: user._id,
       email: user.email
-    }})
-  return newUser;
+    }
+  }
+  )
+  return {
+    _id: user._id,
+    createdAt: newUser?.createdAt
+  };
 }
 
   async register(registerUserDto: RegisterUserDto){
@@ -50,7 +57,6 @@ export class UsersService {
       address,
       role: "USER"
     })
-    console.log(newRegister)
     return newRegister
   }
 
@@ -77,8 +83,14 @@ isValidPassword(password:string, hash: string) {
   return compareSync(password, hash);
 }
 
-async update(updateUserDto: UpdateUserDto) {
-  return await this.userModel.updateOne({_id :updateUserDto._id }, {...updateUserDto})
+async update(updateUserDto: UpdateUserDto, user: IUser) {
+   return await this.userModel.updateOne(
+    {_id :updateUserDto._id }, 
+    {...updateUserDto, updatedBy : {
+      _id: user._id,
+      name: user.name
+    }}
+)
 };
 
 remove(id: string) {
