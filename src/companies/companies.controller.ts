@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { ResponseMessage, currentUser } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -10,7 +10,7 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
+  create(@Body() createCompanyDto: CreateCompanyDto, @currentUser() user: IUser) {
     return this.companiesService.create(createCompanyDto,user);
   }
 
@@ -31,12 +31,12 @@ export class CompaniesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto, @User() user: IUser) {
+  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto, @currentUser() user: IUser) {
     return this.companiesService.update(id, updateCompanyDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @User() user: IUser) {
+  remove(@Param('id') id: string, @currentUser() user: IUser) {
     return this.companiesService.remove(id, user);
   }
 }

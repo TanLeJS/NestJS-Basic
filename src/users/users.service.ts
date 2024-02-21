@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { compareSync, genSaltSync, hashSync } from "bcryptjs";
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { currentUser } from 'src/decorator/customize';
 import { CreateUserDto } from './dto/create-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
+import { IUser } from './users.interface';
 @Injectable()
 export class UsersService {
 
@@ -16,15 +19,40 @@ export class UsersService {
     const hash = hashSync(password, salt);
     return hash
   }
-  async create (createUserDto: CreateUserDto)  {
-    const hashPassword = this.getHashPassword(createUserDto.password)
-    const user = await this.userModel.create({
-      email: createUserDto.email,
-      password: hashPassword, 
-      name: createUserDto.name
-    })
-  return user;
+
+  async create (createUserDto: CreateUserDto, @currentUser() user: IUser)  {
+    const {name, email ,password, age, gender, address, role, company} = createUserDto
+    const hashPassword = this.getHashPassword(password)
+
+    const newUser = await this.userModel.create({
+      name, email,
+      password: hashPassword,
+      age, gender, address, role, company,
+      createdBy: {
+      _id: user._id,
+      email: user.email
+    }})
+  return newUser;
 }
+
+  async register(registerUserDto: RegisterUserDto){
+    const {name, email ,password, age, gender, address} = registerUserDto
+    //add logic check email
+    const isExist = await this.userModel.findOne({email})
+    if (isExist){
+      throw new BadRequestException(`Email ${email} đã tồn tại trên hệ thống`)
+    }
+    const hashPassword = this.getHashPassword(password)
+    const newRegister = await this.userModel.create({
+      name,email,
+      password:hashPassword,
+      age,gender,
+      address,
+      role: "USER"
+    })
+    console.log(newRegister)
+    return newRegister
+  }
 
 findAll() {
   return `This action returns all users`;

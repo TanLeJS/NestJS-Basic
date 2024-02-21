@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { currentUser } from 'src/decorator/customize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IUser } from './users.interface';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
@@ -9,10 +11,10 @@ export class UsersController {
 
   @Post()
   create(
-    @Body() createUserDTO: CreateUserDto
+    @Body() createUserDTO: CreateUserDto, @currentUser() user: IUser
     )
     {
-    return this.usersService.create(createUserDTO)
+    return this.usersService.create(createUserDTO,user)
   }
 
 
