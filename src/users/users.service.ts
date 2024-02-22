@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import aqp from 'api-query-params';
 import { compareSync, genSaltSync, hashSync } from "bcryptjs";
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
@@ -60,9 +61,34 @@ export class UsersService {
     return newRegister
   }
 
-findAll() {
-  return `This action returns all users`;
-};
+  async findAll(currentPage: number, limit: number, qs: string) {
+    const { filter,sort, population } = aqp(qs);
+    delete filter.page;
+    delete filter.limit
+    const offset = (+currentPage - 1) * (+limit);
+    const defaultLimit = +limit ? +limit : 10;
+    const totalItems = (await this.userModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    const result = await this.userModel.find(filter)
+    .skip(offset)
+    .limit(defaultLimit)
+    .sort(sort as any)
+    .select("-password")
+    .populate(population)
+    .exec();
+
+
+    return {
+      meta: {
+      current: currentPage, //trang hiện tại
+      pageSize: limit, //số lượng bản ghi đã lấy
+      pages: totalPages, //tổng số trang với điều kiện query
+      total: totalItems // tổng số phần tử (số bản ghi)
+      },
+      result //kết quả query
+      }
+  }
 
 findOne(id: string) {
   if (!mongoose.Types.ObjectId.isValid(id))
@@ -70,7 +96,7 @@ findOne(id: string) {
 
   return this.userModel.findOne({
       _id: id
-    });
+    }).select("-password") //exclude
 };
 
 findOnebyUsername(username: string) {
@@ -93,11 +119,14 @@ async update(updateUserDto: UpdateUserDto, user: IUser) {
 )
 };
 
-remove(id: string) {
-  if (!mongoose.Types.ObjectId.isValid(id))
-    return "not found user"
-
-  return this.userModel.softDelete({
-      _id: id
-    });}
+async remove(id: string, user) {
+  await this.userModel.updateOne(
+    {_id : id},
+     {
+    deletedBy : {
+      _id : user._id,
+      email: user.email
+    }})
+  return await this.userModel.softDelete({_id: id})
+}
 };

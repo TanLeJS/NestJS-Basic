@@ -15,7 +15,7 @@ export class CompaniesController {
   }
 
   @Get()
-
+  
   @ResponseMessage("Fetch List Company with Paginate")
   findAll(
     @Query("page") currentPage: string, // const currentPage: string = req.query.page

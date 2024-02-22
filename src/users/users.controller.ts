@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ResponseMessage, currentUser } from 'src/decorator/customize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,23 +19,30 @@ export class UsersController {
 
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @ResponseMessage("Fetch List Users with Paginate")
+  findAll(
+    @Query("page") currentPage: string, // const currentPage: string = req.query.page
+    @Query("limit") limit: string,
+    @Query() qs: string
+    ) {
+    return this.usersService.findAll(+currentPage, +limit, qs);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id); // +: convert string to number
+  @ResponseMessage("Fetch User by ID")
+  async findOne(@Param('id') id: string) {
+    return await this.usersService.findOne(id); // +: convert string to number
   }
 
   @Patch()
   @ResponseMessage("Update a user")
-  update(@Body() updateUserDto: UpdateUserDto, @currentUser() user: IUser) {
-    return this.usersService.update(updateUserDto, user);
+  async update(@Body() updateUserDto: UpdateUserDto, @currentUser() user: IUser) {
+    return await this.usersService.update(updateUserDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @ResponseMessage("Delete a user")
+  async remove(@Param('id') id: string, @currentUser() user: IUser) {
+    return await this.usersService.remove(id,user);
   }
 }
