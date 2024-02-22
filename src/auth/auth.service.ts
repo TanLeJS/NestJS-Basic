@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -69,5 +69,15 @@ export class AuthService  {
             expiresIn: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')) / 1000,
         })
         return refresh_token
+    }
+
+    processNewToken = (refresh_token: string) => {
+        try {
+            this.jwtService.verify(refresh_token, {
+                secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET")
+            })
+        } catch (error) {
+            throw new BadRequestException(`Refresh Token không hợp lệ. Vui lòng đăng nhập lại`)
+        }
     }
 }
