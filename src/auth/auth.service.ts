@@ -56,7 +56,7 @@ export class AuthService  {
         };
 }
     async register(user: RegisterUserDto){
-        let newUser = await this.usersService.register(user)
+        const newUser = await this.usersService.register(user)
         return {
             _id: newUser?._id,
             createdAt: newUser?.createdAt
@@ -71,11 +71,46 @@ export class AuthService  {
         return refresh_token
     }
 
-    processNewToken = (refresh_token: string) => {
+    processNewToken = async (refresh_token: string, response: Response) => {
         try {
             this.jwtService.verify(refresh_token, {
                 secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET")
             })
+            let user = await this.usersService.findUserByToken(refresh_token)
+            if (user) {
+                const { _id, name, email, role } = user;
+            const payload = {
+            sub: "token login",
+            iss: "from server",
+            _id,
+            name,
+            email,
+            role
+            };
+            const refresh_token = this.createRefreshToken(payload)
+            //update user with refresh token
+            await this.usersService.updateUserToken(refresh_token, _id.toString())
+            //set refresh_token as cookie
+            response.clearCookie('refresh_token')
+
+            response.cookie('refresh_token', refresh_token, {
+                httpOnly: true,
+                maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')) // millisecond
+            })
+
+            return {
+            access_token: this.jwtService.sign(payload),
+            users: {
+                _id,
+                name,
+                email,
+                role
+            },
+            };
+            } else {
+                throw new BadRequestException(`Refresh Token không hợp lệ. Vui lòng đăng nhập lại`)
+            }
+            
         } catch (error) {
             throw new BadRequestException(`Refresh Token không hợp lệ. Vui lòng đăng nhập lại`)
         }

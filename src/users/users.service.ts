@@ -131,9 +131,16 @@ async remove(id: string, user) {
 }
 
 updateUserToken = async (refresh_token: string, _id: string) => {
-  await this.userModel.updateOne(
+  return await this.userModel.updateOne(
     {_id},
      {refresh_token}
      )
 }
+
+findUserByToken = async (refresh_token: string) => {
+  return await this.userModel.findOne({refresh_token})
+}
+
+
+
 };
