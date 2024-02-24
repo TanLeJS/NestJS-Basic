@@ -7,4 +7,6 @@ export class CreateCompanyDto {
   address: string;
   @IsNotEmpty()
   description: string;
+  @IsNotEmpty()
+  logo: string;
 }
