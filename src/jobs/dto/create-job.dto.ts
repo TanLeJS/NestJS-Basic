@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsDate,
   IsNotEmpty,
   IsNotEmptyObject,
   IsNumber,
@@ -35,8 +34,6 @@ export class CreateJobDto {
   @Type(() => Company)
   company: Company;
 
-  @IsNotEmpty({ message: 'Location không được để trống' })
-  @IsString({ message: 'vui lòng nhập định dạng string' })
   location: string;
 
   @IsNotEmpty({ message: 'Salary không được để trống' })
@@ -56,11 +53,9 @@ export class CreateJobDto {
   description: string;
 
   @IsNotEmpty()
-  @IsDate()
   startDate: Date;
 
   @IsNotEmpty()
-  @IsDate()
   endDate: Date;
 
   @IsNotEmpty()
