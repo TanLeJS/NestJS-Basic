@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseFilePipeBuilder, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FilesService } from './files.service';
@@ -9,8 +9,19 @@ export class FilesController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
+  uploadFile(@UploadedFile(
+    new ParseFilePipeBuilder()
+      .addFileTypeValidator({
+        fileType: /\.(jpg|jpeg|png|image\/png|text\/plain|doc|pdf)$/,
+      })
+      .addMaxSizeValidator({
+        maxSize: 1024 * 1024 // kb -> mB
+      })
+      .build({
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+      }),
+    ) file: Express.Multer.File) {
+      console.log(file);
   }
 
   @Get()
