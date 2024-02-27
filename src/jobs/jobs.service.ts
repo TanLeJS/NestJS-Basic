@@ -13,12 +13,16 @@ export class JobsService {
   constructor(@InjectModel(Job.name) private jobModel: SoftDeleteModel<JobDocument>) { }
 
   async create(createJobDto: CreateJobDto, user: IUser) {
-    return await this.jobModel.create({...createJobDto,
+    const {name, skills, company, salary, quantity,level,
+          description, startDate,endDate,isActive,location} = createJobDto
+    let newJob = this.jobModel.create({name, skills, company, salary, quantity,level,
+      description, startDate,endDate,isActive,location,
       createdBy: {
         _id: user._id,
         email: user.email
       }
-    }) ;
+    })
+    return newJob ;
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {

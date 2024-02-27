@@ -29,8 +29,8 @@ export class JobsController {
   }
 
   @ResponseMessage("Fetch a job by id")
-  @Public()
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.jobsService.findOne(id);
   }

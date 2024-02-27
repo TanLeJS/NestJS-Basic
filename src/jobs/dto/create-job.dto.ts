@@ -18,7 +18,7 @@ class Company {
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty({ message: 'Name không được để trống' })
+  @IsNotEmpty()
   logo: string;
 }
 
