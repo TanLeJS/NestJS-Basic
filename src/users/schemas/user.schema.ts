@@ -60,7 +60,7 @@ export class User {
   updatedAt: Date;
 
   @Prop()
-  isDeleted: Date;
+  isDeleted: boolean;
 
   @Prop()
   deleteAt: Date;

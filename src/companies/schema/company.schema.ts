@@ -42,7 +42,7 @@ export class Company {
   updatedAt: Date;
 
   @Prop()
-  isDeleted: Date;
+  isDeleted: boolean;
 
   @Prop()
   deleteAt: Date;
