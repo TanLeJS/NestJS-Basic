@@ -9,14 +9,42 @@ import { Resume, ResumeDocument } from './schema/resume.schema';
 @Injectable()
 export class ResumesService {
   constructor(@InjectModel(Resume.name) private resumeModel: SoftDeleteModel<ResumeDocument>) {}
+
+
+  // async create(CreateUserCvDto: CreateUserCvDto, user) {
+  //   const {url, companyId, jobId} = CreateUserCvDto
+  //   const {email, _id} = user
+  //   const newResume = await this.resumeModel.create({
+  //       url, companyId, email, jobId,
+  //       userId: _id,
+  //       status:  "PENDING",
+  //       createdBy: { _id, email},
+  //       history: [
+  //         {
+  //           status: "PENDING",
+  //           updatedAt: new Date,
+  //           updatedBy: {
+  //           _id: user._id,
+  //           email: user.email
+  //         }
+  //       }
+  //       ],
+  //     }
+  //   )
+  //   return {
+  //     _id: newResume?._id,
+  //     createdAt: newResume?.createdAt
+  //   }
+  // }
+
   async create(CreateUserCvDto: CreateUserCvDto, user) {
-    const {url, companyId, jobId} = CreateUserCvDto
     const {email, _id} = user
     const newResume = await this.resumeModel.create({
-        url, companyId, email, jobId,
+        ...CreateUserCvDto,
+        email: email,
         userId: _id,
         status:  "PENDING",
-        createBy: { _id, email},
+        createdBy: { _id, email},
         history: [
           {
             status: "PENDING",
@@ -31,7 +59,7 @@ export class ResumesService {
     )
     return {
       _id: newResume?._id,
-      createAt: newResume?.createdAt
+      createdAt: newResume?.createdAt
     }
   }
 

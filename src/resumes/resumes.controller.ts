@@ -9,7 +9,7 @@ export class ResumesController {
   constructor(private readonly resumesService: ResumesService) {}
 
   @Post()
-  @ResponseMessage("Create a resume")
+  @ResponseMessage("Create a new resume")
   create(@Body() CreateUserCvDto: CreateUserCvDto, @currentUser() user: IUser) {
     return this.resumesService.create(CreateUserCvDto, user);
   }
