@@ -1,11 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsBoolean,
-  IsMongoId,
-  IsNotEmpty,
-  ValidateNested
-} from 'class-validator';
+import { IsArray, IsBoolean, IsMongoId, IsNotEmpty } from 'class-validator';
 
 class ObjectIdDto {
   @IsMongoId({ each: true, message: 'Each element must be a valid ObjectID' })
@@ -23,8 +17,8 @@ export class CreateRoleDto {
   @IsBoolean()
   isActive: boolean;
 
+  @IsNotEmpty()
   @IsArray()
-  @ValidateNested({ each: true })
   @Type(() => ObjectIdDto)
-  permission: ObjectIdDto[];
+  permissions: ObjectIdDto[];
 }

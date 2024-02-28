@@ -76,7 +76,6 @@ export class PermissionsService {
         email: user.email
       }
       })
-
   }
 
   async remove(id: string, user) {

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { Permission } from 'src/permissions/schema/permission.schema';
 
 export type RoleDocument = HydratedDocument<Role>;
 
@@ -14,8 +15,8 @@ export class Role {
   @Prop()
   isActive: boolean;
 
-  @Prop()
-  permission: [];
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Permission.name })
+  permissions: Permission[];
 
   @Prop()
   createdAt: Date;
