@@ -56,8 +56,13 @@ export class PermissionsService {
       }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+  async findOne(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id))
+    return new BadRequestException(`not found company with id = ${id}`)
+
+  return await this.permissionModel.findOne({
+      _id: id
+    }) //exclude
   }
 
   async update(_id: string, updatePermissionDto: UpdatePermissionDto, user) {
@@ -74,7 +79,14 @@ export class PermissionsService {
 
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+  async remove(id: string, user) {
+    await this.permissionModel.updateOne(
+      {_id : id},
+       {
+      deletedBy : {
+        _id : user._id,
+        email: user.email
+      }})
+    return await this.permissionModel.softDelete({_id: id})
   }
 }
