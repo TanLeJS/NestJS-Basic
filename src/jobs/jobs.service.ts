@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
@@ -33,14 +33,12 @@ export class JobsService {
     const defaultLimit = +limit ? +limit : 10;
     const totalItems = (await this.jobModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
-
     const result = await this.jobModel.find(filter)
     .skip(offset)
     .limit(defaultLimit)
     .sort(sort as any)
     .populate(population)
     .exec();
-
     return {
       meta: {
       current: currentPage, //trang hiện tại
@@ -54,7 +52,7 @@ export class JobsService {
 
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id))
-      return "not found user"
+      return new BadRequestException(`Not found a job = ${id}`)
 
   return await this.jobModel.findOne({
       _id: id

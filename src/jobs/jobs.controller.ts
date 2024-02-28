@@ -17,7 +17,7 @@ export class JobsController {
 
 
 
-  @ResponseMessage("Fetch List Users with Paginate")
+  @ResponseMessage("Fetch List Jobs with Paginate")
   @Get("")
   @Public()
   findAll(
