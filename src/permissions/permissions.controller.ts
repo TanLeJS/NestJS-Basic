@@ -1,20 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PermissionsService } from './permissions.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Public, ResponseMessage, currentUser } from 'src/decorator/customize';
+import { IUser } from 'src/users/users.interface';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { PermissionsService } from './permissions.service';
 
 @Controller('permissions')
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Post()
-  create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionsService.create(createPermissionDto);
+  create(@Body() createPermissionDto: CreatePermissionDto, @currentUser() user:IUser) {
+    return this.permissionsService.create(createPermissionDto, user);
   }
 
   @Get()
-  findAll() {
-    return this.permissionsService.findAll();
+  @Public()
+  @ResponseMessage("Fetch List Company with Paginate")
+  findAll(
+    @Query("current") currentPage: string, // const currentPage: string = req.query.page
+    @Query("pageSize") limit: string,
+    @Query() qs: string
+    ) {
+    return this.permissionsService.findAll(+currentPage, +limit, qs);
   }
 
   @Get(':id')
@@ -23,8 +31,8 @@ export class PermissionsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
-    return this.permissionsService.update(+id, updatePermissionDto);
+  update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto, @currentUser() user: IUser) {
+    return this.permissionsService.update(id, updatePermissionDto,user);
   }
 
   @Delete(':id')

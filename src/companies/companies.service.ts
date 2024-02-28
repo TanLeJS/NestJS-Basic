@@ -29,7 +29,6 @@ export class CompaniesService {
     const defaultLimit = +limit ? +limit : 10;
     const totalItems = (await this.companyModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
-
     const result = await this.companyModel.find(filter)
     .skip(offset)
     .limit(defaultLimit)
@@ -53,10 +52,10 @@ export class CompaniesService {
     if (!mongoose.Types.ObjectId.isValid(id))
       return new BadRequestException(`not found company with id = ${id}`)
 
-  return await this.companyModel.findOne({
-      _id: id
-    }) //exclude
-  }
+    return await this.companyModel.findOne({
+        _id: id
+      }) //exclude
+    }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto, user) {
     return await this.companyModel.updateOne(

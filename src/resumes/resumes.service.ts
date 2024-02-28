@@ -11,37 +11,11 @@ export class ResumesService {
   constructor(@InjectModel(Resume.name) private resumeModel: SoftDeleteModel<ResumeDocument>) {}
 
 
-  // async create(CreateUserCvDto: CreateUserCvDto, user) {
-  //   const {url, companyId, jobId} = CreateUserCvDto
-  //   const {email, _id} = user
-  //   const newResume = await this.resumeModel.create({
-  //       url, companyId, email, jobId,
-  //       userId: _id,
-  //       status:  "PENDING",
-  //       createdBy: { _id, email},
-  //       history: [
-  //         {
-  //           status: "PENDING",
-  //           updatedAt: new Date,
-  //           updatedBy: {
-  //           _id: user._id,
-  //           email: user.email
-  //         }
-  //       }
-  //       ],
-  //     }
-  //   )
-  //   return {
-  //     _id: newResume?._id,
-  //     createdAt: newResume?.createdAt
-  //   }
-  // }
-
   async create(CreateUserCvDto: CreateUserCvDto, user) {
+    const {url, companyId, jobId} = CreateUserCvDto
     const {email, _id} = user
     const newResume = await this.resumeModel.create({
-        ...CreateUserCvDto,
-        email: email,
+        url, companyId, email, jobId,
         userId: _id,
         status:  "PENDING",
         createdBy: { _id, email},
@@ -62,6 +36,32 @@ export class ResumesService {
       createdAt: newResume?.createdAt
     }
   }
+
+  // async create(CreateUserCvDto: CreateUserCvDto, user) {
+  //   const {email, _id} = user
+  //   const newResume = await this.resumeModel.create({
+  //       ...CreateUserCvDto,
+  //       email: email,
+  //       userId: _id,
+  //       status:  "PENDING",
+  //       createdBy: { _id, email},
+  //       history: [
+  //         {
+  //           status: "PENDING",
+  //           updatedAt: new Date,
+  //           updatedBy: {
+  //           _id: user._id,
+  //           email: user.email
+  //         }
+  //       }
+  //       ],
+  //     }
+  //   )
+  //   return {
+  //     _id: newResume?._id,
+  //     createdAt: newResume?.createdAt
+  //   }
+  // }
 
   async findAll(currentPage: number, limit: number, qs: string) {
     const { filter,sort, population, projection} = aqp(qs);
