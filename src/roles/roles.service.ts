@@ -62,23 +62,15 @@ export class RolesService {
 
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id))
-    return new BadRequestException(`not found company with id = ${id}`)
-    
-
+        return new BadRequestException(`not found company with id = ${id}`)
   return await this.roleModel.findOne({
       _id: id
-    }).populate({path: "permissions", select: {_id: 1, apiPath: 1, name: 1, method: 1} }) 
+    }).populate({path: "permissions", select: {_id: 1, apiPath: 1, name: 1, method: 1, module: 1} }) 
   }
 
   async update(_id: string, updateRoleDto: UpdateRoleDto,user) {
     if (!mongoose.Types.ObjectId.isValid(_id)){
       throw new BadRequestException("Not found role")
-    }
-    const isExist = await this.roleModel.findOne({name});
-    if (isExist) {
-      throw new BadRequestException(
-        `name ${name} đã tồn tại`
-      );
     }
     return await this.roleModel.updateOne({_id: _id}, 
       {...updateRoleDto,
@@ -90,6 +82,10 @@ export class RolesService {
   }
 
   async remove(id: string, user) {
+    const foundRole = await this.roleModel.findById(id)
+    if (foundRole.name === "ADMIN") {
+      throw new BadRequestException("không thể xoá role Admin")
+    }
     await this.roleModel.updateOne(
       {_id : id},
        {

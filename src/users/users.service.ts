@@ -96,13 +96,14 @@ findOne(id: string) {
 
   return this.userModel.findOne({
       _id: id
-    }).select("-password") //exclude
+    }).select("-password")     //exclude
+      .populate({path: "role", select: {name : 1, _id: 1}})
 };
 
 findOnebyUsername(username: string) {
   return this.userModel.findOne({
       email: username
-    });
+    }).populate({path: "role", select: {name : 1, permissions : 1}})
 };
 
 isValidPassword(password:string, hash: string) {
@@ -120,6 +121,12 @@ async update(updateUserDto: UpdateUserDto, user: IUser) {
 };
 
 async remove(id: string, user) {
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return "not found user"
+  const foundUser = await this.userModel.findById(id)
+  if (foundUser.email === "admin@gmail.com") {
+    throw new BadRequestException("không thể xoá tài khoản admin@gmail.com")
+  }
   await this.userModel.updateOne(
     {_id : id},
      {
