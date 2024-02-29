@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from 'src/users/users.interface';
 import { CreateUserCvDto } from './dto/create-resume.dto';
 import { Resume, ResumeDocument } from './schema/resume.schema';
 
@@ -10,8 +11,7 @@ import { Resume, ResumeDocument } from './schema/resume.schema';
 export class ResumesService {
   constructor(@InjectModel(Resume.name) private resumeModel: SoftDeleteModel<ResumeDocument>) {}
 
-
-  async create(CreateUserCvDto: CreateUserCvDto, user) {
+  async create(CreateUserCvDto: CreateUserCvDto, user: IUser) {
     const {url, companyId, jobId} = CreateUserCvDto
     const {email, _id} = user
     const newResume = await this.resumeModel.create({
@@ -36,32 +36,6 @@ export class ResumesService {
       createdAt: newResume?.createdAt
     }
   }
-
-  // async create(CreateUserCvDto: CreateUserCvDto, user) {
-  //   const {email, _id} = user
-  //   const newResume = await this.resumeModel.create({
-  //       ...CreateUserCvDto,
-  //       email: email,
-  //       userId: _id,
-  //       status:  "PENDING",
-  //       createdBy: { _id, email},
-  //       history: [
-  //         {
-  //           status: "PENDING",
-  //           updatedAt: new Date,
-  //           updatedBy: {
-  //           _id: user._id,
-  //           email: user.email
-  //         }
-  //       }
-  //       ],
-  //     }
-  //   )
-  //   return {
-  //     _id: newResume?._id,
-  //     createdAt: newResume?.createdAt
-  //   }
-  // }
 
   async findAll(currentPage: number, limit: number, qs: string) {
     const { filter,sort, population, projection} = aqp(qs);
@@ -115,14 +89,18 @@ export class ResumesService {
     ])
   }
 
-  async update(_id: string, status: string, user) {
+  async update(_id: string, status: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)){
       throw new BadRequestException("Not found resume")
     }
-
     return await this.resumeModel.updateOne(
-      {_id: _id},
-      { $push: { history: {
+      { _id },
+      { status,
+        updatedBy: {
+          _id: user._id,
+          email: user.email
+          },
+         $push: { history: {
           status,
           updatedAt: new Date,
           updatedBy: {
@@ -131,10 +109,6 @@ export class ResumesService {
           }   
       } 
     }, 
-    updatedBy: {
-      _id: user._id,
-      email: user.email
-      }
   }
   )
 }

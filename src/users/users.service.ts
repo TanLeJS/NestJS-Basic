@@ -4,6 +4,8 @@ import aqp from 'api-query-params';
 import { compareSync, genSaltSync, hashSync } from "bcryptjs";
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { USER_ROLE } from 'src/databases/sample';
+import { Role, RoleDocument } from 'src/roles/schema/role.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,7 +14,12 @@ import { IUser } from './users.interface';
 @Injectable()
 export class UsersService {
 
-  constructor(@InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>) { }
+  constructor(
+    @InjectModel(User.name) 
+    private userModel: SoftDeleteModel<UserDocument>,
+    @InjectModel(Role.name) 
+    private roleModel: SoftDeleteModel<RoleDocument>
+    ) { }
 
   getHashPassword = (password: string) => {
     const salt = genSaltSync(10);
@@ -50,13 +57,14 @@ export class UsersService {
     if (isExist){
       throw new BadRequestException(`Email ${email} đã tồn tại trên hệ thống`)
     }
+    const userRole = await this.roleModel.findOne({name: USER_ROLE})
     const hashPassword = this.getHashPassword(password)
     const newRegister = await this.userModel.create({
       name,email,
       password:hashPassword,
       age,gender,
       address,
-      role: "USER"
+      role: userRole?._id
     })
     return newRegister
   }
@@ -103,8 +111,12 @@ findOne(id: string) {
 findOnebyUsername(username: string) {
   return this.userModel.findOne({
       email: username
-    }).populate({path: "role", select: {name : 1, permissions : 1}})
+    }).populate({path: "role", select: {name : 1}})
 };
+// .populate({
+//   path: "permissions",
+//   select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 }
+// });
 
 isValidPassword(password:string, hash: string) {
   return compareSync(password, hash);
@@ -145,6 +157,6 @@ updateUserToken = async (refresh_token: string, _id: string) => {
 }
 
 findUserByToken = async (refresh_token: string) => {
-  return await this.userModel.findOne({refresh_token})
+  return await this.userModel.findOne({refresh_token}).populate({path: "role", select: {name : 1}})
 }
 };
