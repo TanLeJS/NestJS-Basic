@@ -34,8 +34,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // check permisisons:
     const targetMethod = request.method
     const targetEndpoint = request.route?.path
-    const permisisons = user?.permisisons ?? []
-    const isExist = permisisons.find(permisison => 
+    const permissisons = user?.permissions ?? []
+    const isExist = permissisons.find(permisison => 
       targetMethod === permisison.method
       &&
       targetEndpoint === permisison.apiPath
