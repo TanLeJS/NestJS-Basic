@@ -11,10 +11,11 @@ import { Resume, ResumeDocument } from './schema/resume.schema';
 export class ResumesService {
   constructor(@InjectModel(Resume.name) private resumeModel: SoftDeleteModel<ResumeDocument>) {}
 
-  async create(CreateUserCvDto: CreateUserCvDto, user: IUser) {
-    const {url, companyId, jobId} = CreateUserCvDto
+  async create(createUserCvDto: CreateUserCvDto, user: IUser) {
+    const {url, companyId, jobId} = createUserCvDto
     const {email, _id} = user
-    const newResume = await this.resumeModel.create({
+    
+    const newCV = await this.resumeModel.create({
         url, companyId, email, jobId,
         userId: _id,
         status:  "PENDING",
@@ -32,8 +33,8 @@ export class ResumesService {
       }
     )
     return {
-      _id: newResume?._id,
-      createdAt: newResume?.createdAt
+      _id: newCV?._id,
+      createdAt: newCV?.createdAt
     }
   }
 

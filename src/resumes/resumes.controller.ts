@@ -10,8 +10,8 @@ export class ResumesController {
 
   @Post()
   @ResponseMessage("Create a new resume")
-  create(@Body() CreateUserCvDto: CreateUserCvDto, @currentUser() user: IUser) {
-    return this.resumesService.create(CreateUserCvDto, user);
+  create(@Body() createUserCvDto: CreateUserCvDto, @currentUser() user: IUser) {
+    return this.resumesService.create(createUserCvDto, user);
   }
 
   @Post("by-user")
