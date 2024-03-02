@@ -4,27 +4,27 @@ import aqp from 'api-query-params';
 import mongoose from 'mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
-import { CreateJobDto } from './dto/create-job.dto';
-import { UpdateJobDto } from './dto/update-job.dto';
-import { Job, JobDocument } from './schemas/job.schema';
+import { CreateSubscriberDto } from './dto/create-subscriber.dto';
+import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
+import { Subscriber, SubscriberDocument } from './schema/subscriber.schema';
 
 @Injectable()
-export class JobsService {
-  constructor(@InjectModel(Job.name) private jobModel: SoftDeleteModel<JobDocument>) { }
+export class SubscribersService {
+  constructor(@InjectModel(Subscriber.name) private subscriberModel: SoftDeleteModel<SubscriberDocument>) { }
 
-  async create(createJobDto: CreateJobDto, user: IUser) {
-    const {name, skills, company, salary, quantity,level,
-          description, startDate, endDate, isActive, location} = createJobDto
-    const newJob = await this.jobModel.create({name, skills, company, salary, quantity,level,
-      description, startDate,endDate,isActive,location,
+
+  async create(createSubscriberDto: CreateSubscriberDto, user: IUser) {
+    const {email,name,skills} = createSubscriberDto
+    const newSubscriber = await this.subscriberModel.create({
+      email, name, skills,
       createdBy: {
         _id: user._id,
         email: user.email
       }
     })
     return {
-      _id: newJob?._id,
-      createdAt: newJob?.createdAt
+      _id: newSubscriber?._id,
+      createdAt: newSubscriber?.createdAt
     }
   }
 
@@ -34,9 +34,9 @@ export class JobsService {
     delete filter.pageSize;
     const offset = (+currentPage - 1) * (+limit);
     const defaultLimit = +limit ? +limit : 10;
-    const totalItems = (await this.jobModel.find(filter)).length;
+    const totalItems = (await this.subscriberModel.find(filter)).length;
     const totalPages = Math.ceil(totalItems / defaultLimit);
-    const result = await this.jobModel.find(filter)
+    const result = await this.subscriberModel.find(filter)
     .skip(offset)
     .limit(defaultLimit)
     .sort(sort as any)
@@ -57,16 +57,16 @@ export class JobsService {
     if (!mongoose.Types.ObjectId.isValid(id))
       return new BadRequestException(`Not found a job = ${id}`)
 
-  return await this.jobModel.findOne({
+  return await this.subscriberModel.findOne({
       _id: id
     }) //exclude
   }
 
-   async update(id: string, updateJobDto: UpdateJobDto, user) {
-    return await this.jobModel.updateOne(
+  async update(id: string, updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
+    return await this.subscriberModel.updateOne(
       {_id: id},
       {
-        ...updateJobDto,
+        ...updateSubscriberDto,
         updatedBy: {
           _id: user._id,
           email: user.email
@@ -75,14 +75,14 @@ export class JobsService {
       )
   }
 
-  async remove(id: string, user) {
-    await this.jobModel.updateOne(
+  async remove(id: string, user: IUser) {
+    await this.subscriberModel.updateOne(
       {_id : id},
        {
       deletedBy : {
         _id : user._id,
         email: user.email
       }})
-    return await this.jobModel.softDelete({_id: id})
+    return await this.subscriberModel.softDelete({_id: id})
   }
 }
