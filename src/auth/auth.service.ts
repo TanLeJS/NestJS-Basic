@@ -25,7 +25,7 @@ export class AuthService  {
                 const temp = await this.roleService.findOne(userRole._id)
                 const objUser = {
                     ...user.toObject(),
-                    permissions: temp?.permissions ?? []
+                    permissions: temp?.permissions ??[]
                 }
                 return objUser
             }
@@ -42,7 +42,6 @@ export class AuthService  {
         name,
         email,
         role,
-        permissions
         };
         const refresh_token = this.createRefreshToken(payload)
         //update user with refresh token
@@ -118,7 +117,7 @@ export class AuthService  {
                 name,
                 email,
                 role,
-                permissions: temp?.permissions ?? []
+                permissions: temp?.permissions ??[]
             },
             };
             } else {

@@ -22,7 +22,10 @@ export class JobsService {
         email: user.email
       }
     })
-    return newJob ;
+    return {
+      _id: newJob?._id,
+      createdAt: newJob?.createdAt
+    }
   }
 
   async findAll(currentPage: number, limit: number, qs: string) {

@@ -45,9 +45,9 @@ export class UsersService {
   }
   )
   return {
-    _id: user._id,
+    _id: newUser?._id,
     createdAt: newUser?.createdAt
-  };
+  }
 }
 
   async register(registerUserDto: RegisterUserDto){
@@ -57,7 +57,10 @@ export class UsersService {
     if (isExist){
       throw new BadRequestException(`Email ${email} đã tồn tại trên hệ thống`)
     }
+
+    // fetch userRole
     const userRole = await this.roleModel.findOne({name: USER_ROLE})
+
     const hashPassword = this.getHashPassword(password)
     const newRegister = await this.userModel.create({
       name,email,

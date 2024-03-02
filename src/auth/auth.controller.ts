@@ -35,7 +35,7 @@ export class AuthController {
     @ResponseMessage("Refresh a user")
     @Get("/account")
     async handleGetAccount(@currentUser() user: IUser) {
-      const temp = await this.roleService.findOne(user.role._id) as any
+      const temp = await this.roleService.findOne(user.role._id) as any;
       user.permissions = temp.permissions;
       return {user}
     }

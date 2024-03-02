@@ -21,7 +21,6 @@ export class DatabasesService implements OnModuleInit {
 
         @InjectModel(Role.name)
         private roleModel: SoftDeleteModel<RoleDocument>,
-
         private configService: ConfigService,
         private userService: UsersService
     ) { }

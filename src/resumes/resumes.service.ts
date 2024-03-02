@@ -14,7 +14,7 @@ export class ResumesService {
   async create(createUserCvDto: CreateUserCvDto, user: IUser) {
     const {url, companyId, jobId} = createUserCvDto
     const {email, _id} = user
-    
+
     const newCV = await this.resumeModel.create({
         url, companyId, email, jobId,
         userId: _id,
@@ -73,22 +73,23 @@ export class ResumesService {
     }) //exclude
   }
   
-  async findByUsers(user) {
-    return await this.resumeModel.find({
-      userId: user._id
-    })
-    .sort("-createdAt")
-    .populate([
-    {
-        path: "companyId",
-        select: { name: 1 }
-    },
-    {
-        path: "jobId",
-        select: { name: 1 }
+    async findByUsers(user: IUser) {
+      return await this.resumeModel.find({
+          userId: user._id,
+          })
+          .sort("-createdAt")
+          .populate([
+          {
+          path: "companyId",
+          select: { name: 1 }
+          },
+          {
+          path: "jobId",
+          select: { name: 1 }
+        }
+      ] 
+      )
     }
-    ])
-  }
 
   async update(_id: string, status: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(_id)){
