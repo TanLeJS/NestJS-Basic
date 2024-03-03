@@ -9,15 +9,15 @@ import { SubscribersService } from './subscribers.service';
 export class SubscribersController {
   constructor(private readonly subscribersService: SubscribersService) {}
 
-  @ResponseMessage("Create a job")
+  @ResponseMessage("Create a subscriber")
   @Post()
-  create(@Body() createJobDto: CreateSubscriberDto, @currentUser() user: IUser) {
-    return this.subscribersService.create(createJobDto, user);
+  create(@Body() createSubscriberDto: CreateSubscriberDto, @currentUser() user: IUser) {
+    return this.subscribersService.create(createSubscriberDto, user);
   }
 
 
 
-  @ResponseMessage("Fetch List Jobs with Paginate")
+  @ResponseMessage("Fetch List Subscriber with Paginate")
   @Get("")
   @Public()
   findAll(
@@ -28,7 +28,7 @@ export class SubscribersController {
     return this.subscribersService.findAll(+currentPage, +limit, qs);
   }
 
-  @ResponseMessage("Fetch a job by id")
+  @ResponseMessage("Fetch a subscribe by id")
   @Get(':id')
   @Public()
   findOne(@Param('id') id: string) {
@@ -37,14 +37,14 @@ export class SubscribersController {
 
 
   
-  @ResponseMessage("Update a job")
+  @ResponseMessage("Update a subscriber")
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSubscriberDto: UpdateSubscriberDto, @currentUser() user: IUser) {
     return this.subscribersService.update(id, updateSubscriberDto,user);
   }
 
 
-  @ResponseMessage("Delete a job")
+  @ResponseMessage("Delete a subscriber")
   @Delete(':id')
   remove(@Param('id') id: string, @currentUser() user: IUser) {
     return this.subscribersService.remove(id, user);
