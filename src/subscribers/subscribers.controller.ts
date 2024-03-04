@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { Public, ResponseMessage, currentUser } from 'src/decorator/customize';
+import { Public, ResponseMessage, SkipCheckPermission, currentUser } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
 import { UpdateSubscriberDto } from './dto/update-subscriber.dto';
@@ -15,7 +15,12 @@ export class SubscribersController {
     return this.subscribersService.create(createSubscriberDto, user);
   }
 
-
+  @Post("skills")
+  @ResponseMessage("Get a subscibers skills")
+  @SkipCheckPermission()
+  getUserSkills(@currentUser() user: IUser){
+    return this.subscribersService.getSkills(user)
+  }
 
   @ResponseMessage("Fetch List Subscriber with Paginate")
   @Get("")
@@ -36,12 +41,14 @@ export class SubscribersController {
   }
 
 
-  
+  @Patch()
+  @SkipCheckPermission()
   @ResponseMessage("Update a subscriber")
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubscriberDto: UpdateSubscriberDto, @currentUser() user: IUser) {
-    return this.subscribersService.update(id, updateSubscriberDto,user);
+  update(@Body() updateSubscriberDto: UpdateSubscriberDto, @currentUser() user: IUser) {
+    return this.subscribersService.update(updateSubscriberDto,user);
   }
+
+
 
 
   @ResponseMessage("Delete a subscriber")
