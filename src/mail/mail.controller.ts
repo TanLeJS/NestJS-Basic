@@ -9,15 +9,15 @@ export class MailController {
     private mailerService: MailerService
     ) {}
 
-@Get()
-@Public()
-@ResponseMessage("Test email")
-async handleTestEmail() {
-await this.mailerService.sendMail({
-to: "tanlengoc1304@gmail.com",
-from: '"Support Team" <support@example.com>', // override default from
-subject: 'Welcome to Nice App! Confirm your Email',
-html: '<b>welcome bla bla hoi dan it</b>', // HTML body content
-});
-}
-}
+  @Get()
+  @Public()
+  @ResponseMessage("Test email")
+    async handleTestEmail() {
+      await this.mailerService.sendMail({
+      to: "tanlengoc1304@gmail.com",
+      from: '"Support Team" <support@example.com>', // override default from
+      subject: 'Welcome to Nice App! Confirm your Email',
+      template: "job", // HTML body content
+  });
+  }
+  }
