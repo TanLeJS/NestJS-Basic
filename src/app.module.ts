@@ -1,23 +1,29 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { softDeletePlugin } from 'soft-delete-plugin-mongoose';
 import { CompaniesModule } from './companies/companies.module';
-import { JobsModule } from './jobs/jobs.module';
-import { FilesModule } from './files/files.module';
-import { ResumesModule } from './resumes/resumes.module';
-import { PermissionsModule } from './permissions/permissions.module';
-import { RolesModule } from './roles/roles.module';
 import { DatabasesModule } from './databases/databases.module';
-import { SubscribersModule } from './subscribers/subscribers.module';
+import { FilesModule } from './files/files.module';
+import { JobsModule } from './jobs/jobs.module';
 import { MailModule } from './mail/mail.module';
-
+import { PermissionsModule } from './permissions/permissions.module';
+import { ResumesModule } from './resumes/resumes.module';
+import { RolesModule } from './roles/roles.module';
+import { SubscribersModule } from './subscribers/subscribers.module';
+import { UsersModule } from './users/users.module';
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot({
+      limit: 10,
+      ttl: 60
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
