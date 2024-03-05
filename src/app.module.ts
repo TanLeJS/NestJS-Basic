@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { CompaniesModule } from './companies/companies.module';
 import { DatabasesModule } from './databases/databases.module';
 import { FilesModule } from './files/files.module';
+import { HealthModule } from './health/health.module';
 import { JobsModule } from './jobs/jobs.module';
 import { MailModule } from './mail/mail.module';
 import { PermissionsModule } from './permissions/permissions.module';
@@ -17,13 +18,16 @@ import { ResumesModule } from './resumes/resumes.module';
 import { RolesModule } from './roles/roles.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { UsersModule } from './users/users.module';
-import { HealthModule } from './health/health.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
-      limit: 10,
-      ttl: 60
+      throttlers: [
+        {
+          limit: 10,
+          ttl: 60
+        }
+      ]
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
