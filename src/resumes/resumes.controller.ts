@@ -1,9 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Public, ResponseMessage, currentUser } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 import { CreateUserCvDto } from './dto/create-resume.dto';
 import { ResumesService } from './resumes.service';
 
+@ApiTags('resumes')
 @Controller('resumes')
 export class ResumesController {
   constructor(private readonly resumesService: ResumesService) {}
